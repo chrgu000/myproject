@@ -1,0 +1,8 @@
+#需要忽略的文件或目录
+#*.git\ 
+.classpath
+.project
+target/
+.externalToolBuilders/
+.settings/
+test.xml
