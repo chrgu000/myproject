@@ -83,6 +83,7 @@ To github.com:baozc/test.git
 ## git操作命令
 - `git init` 初始化仓库，如果初始化成功，执行了 `git init`命令的目录下就会生成 .git 目录。这个 .git 目录里存储着管理当前目录内容所需的仓库数据。
 - `git status` 查看仓库的状态，工作树和仓库在被操作的过程中，状态会不断发生变化。在 Git 操作过程中时常用 `git status`命令查看当前状态，可谓基本中的基本。
+	- 当文件太多时，进入某个文件夹，使用`git status .` 可以只查看这个文件夹中的git状态。
 - `git add` 向暂存区中添加文件，如果只是用 Git 仓库的工作树创建了文件，那么该文件并不会被记入 Git 仓库的版本管理对象当中。要想让文件成为 Git 仓库的管理对象，就需要用 git add命令将其加入暂存区（Stage 或者 Index）中。暂存区是提交之前的一个临时区域。
 	- `git add xx`命令可以将xx文件或目录添加到暂存区
 	- `git add -A .`来一次添加所有改变的文件。注意 -A 选项后面还有一个句点. `git add -A`表示添加所有内容
@@ -98,6 +99,8 @@ To github.com:baozc/test.git
 		- **中止提交** 如果在编辑器启动后想中止提交，请将提交信息留空并直接关闭编辑器，随后提交就会被中止。
 	+ 只要按照上面的格式输入，今后便可以通过确认日志的命令或工具看到这些记录。
 	+ 在以 #（井号）标为注释的 Changes to be committed（要提交的更改）栏中，可以查看本次提交中包含的文件。
+	+ **git 提交出现这个错误：**`fatal: Unable to create ‘project_path/.git/index.lock’: File exists.`
+		- 解决方案：需要删除.git\index.lock，在cmder中无法删除，可以使用git bash。
 - `git log` 查看提交日志，包括可以查看什么人在什么时候进行了提交或合并，以及操作前后有怎样的差别。
 	- **只显示提交信息的第一行** 可以在 `git log`命令后加上 `--pretty=short`
 	- **只显示指定目录、文件的日志** 只要在 `git log`命令后加上目录名，便会只显示该目录下的日志。如果加的是文件名，就会只显示与该文件相关的日 志。
@@ -108,7 +111,43 @@ To github.com:baozc/test.git
 		+ 即指`git add`添加到暂存区的文件和上次提交(工作树)文件的差别
 		+ 不妨养成这样一个好习惯：在执行 `git commit`命令之前先执行`git diff HEAD`命令，查看本次提交与上次提交之间有什么差别，等确认完毕后再进行 提交。
 	- **比对文件更改前后差别，没添加暂存区时使用`git diff`，添加暂存区后使用`git diff head`**
-
+- `git diff`命令总结：
+	- `working tree`：就是你所工作在的目录，每当你在代码中进行了修改，`working tree`的状态就改变了。
+	- `index file`：是索引文件，它是连接`working tree`和`commit`的桥梁，每当我们使用git-add命令来登记后，`index file`的内容就改变了，此时`index file`就和`working tree`同步了。
+	- `commit`：是最后的阶段，只有`commit`了，我们的代码才真正进入了git仓库。我们使用`git commit`就是将`index file`里的内容提交到`commit`中
+	- `git diff`：是查看working tree与index file的差别的。
+	- `git diff --cached`：是查看index file与commit的差别的。
+	- `git diff HEAD`：是查看working tree和commit的差别的。（你一定没有忘记，HEAD代表的是最近的一次commit的信息）
+	- **查看简单的diff结果，可以加上--stat参数：**`git diff --stat `
+- `git diff`输出格式：
+```
+$ git diff --cached
+diff --git a/gfm/git/git.md b/gfm/git/git.md
+index 87dd5e5..22b5c0d 100644
+--- a/gfm/git/git.md
++++ b/gfm/git/git.md
+@@ -83,6 +83,7 @@ To github.com:baozc/test.git
+ ## git操作命令
+ - `git init` 初始化仓库，如果初始化成功，执行了 `git init`命令的目录下就会生成 .git 目录。这
+ - `git status` 查看仓库的状态，工作树和仓库在被操作的过程中，状态会不断发生变化。在 Git 操作
++       - 当文件太多时，进入某个文件夹，使用`git status .` 可以只查看这个文件夹中的git状态。
+ - `git add` 向暂存区中添加文件，如果只是用 Git 仓库的工作树创建了文件，那么该文件并不会被记
+（Stage 或者 Index）中。暂存区是提交之前的一个临时区域。
+        - `git add xx`命令可以将xx文件或目录添加到暂存区
+        - `git add -A .`来一次添加所有改变的文件。注意 -A 选项后面还有一个句点. `git add -A`
+```
+	- 第一行表示结果为git格式的diff。进行比较的是a版本的git.md（**变动前**），b版本的git.md(**变动后**)
+	- 第二行表示两个版本的git哈希值（index区域的87dd5e5对象，与工作目录区域的22b5c0d对象进行比较），最后的六位数字是对象的模式（普通文件，644权限）。
+	- 第三行表示进行比较的两个文件。 "---"表示变动前的版本，"+++"表示变动后的版本。  
+		```
+		--- a/gfm/git/git.md
+		+++ b/gfm/git/git.md
+		```
+	- 后面的行都与官方的合并格式diff相同。
+		- 差异按照差异小结进行组织，每个差异小结的第一行都是定位语句，由@@开头，@@结尾。
+		- `@@ -83,6 +83,7 @@ `表示在源文件第83行开始的6行和目标文件第83行开始的7行构成一个差异小结
+		- 这个差异小结中，目标文件添加了一行`- 当文件太多时，进入某个文件夹……`
+		- - 开头的行，是只出现在源文件中的行，+ 开头的行，是只出现在目标文件中的行
 ***
 
 ## git分支命令
