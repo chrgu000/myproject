@@ -1,0 +1,93 @@
+DROP PROCEDURE IF EXISTS v_app_id;
+CREATE PROCEDURE v_app_id(in v_sql varchar(9000),in user_name VARCHAR(100))
+begin
+	/**拼接用户与app对应权限sql ----v_sql查询语句前半部分，user_name用户帐号---**/
+	
+	#变量只能定义到最上面
+	declare tmp_id VARCHAR(500);
+	#拼接app对应部门权限sql语句
+	declare t varchar(5000);
+	/* 遍历数据结束标志*/
+	DECLARE done INT DEFAULT FALSE;
+	#byPerson权限sql条件语句
+	declare t_sql VARCHAR(1000) DEFAULT 'CASE t.app_id ';
+
+	/* 声明游标  查询byPerson 所属的appId*/ 
+	declare appCursor cursor for select t.app_id from app_store_app_base t where t.app_state= 'start' and t.APP_ROLE='byPerson';
+	/* 将结束标志绑定到游标*/
+	DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+	/* 打开游标 */
+	OPEN appCursor;
+	/*循环遍历byPerson的appId*/
+	loop1 : LOOP
+		/*移动游标并赋值*/
+		FETCH appCursor into tmp_id;
+		/*判断结束标志，结束循环*/
+		IF done THEN
+			LEAVE loop1;
+		END IF;
+		
+		/*处理语句放到判断结束语句后面，否则会比实际多执行一次*/
+		#查询app对应权限的部门，拼接sql查询部门中的帐号
+		call v_app_dept(tmp_id,t);
+		#byPerson权限，根据appId来查询对应用户是否有权限查看app
+		set t_sql = CONCAT(t_sql," WHEN '",tmp_id,"' THEN '",user_name,"' in (",t,")");
+	
+	END LOOP;
+	#CASE xxx WHEN xxx THEN 添加结束语句
+	set t_sql = CONCAT(t_sql," END");
+
+	/*整条sql语句拼接*/
+	set v_sql = CONCAT(v_sql,t_sql,")");
+	
+	/**预编译sql语句，执行sql查询**/
+	set @v_sql = v_sql;
+	SELECT @v_sql; #输出查询sql语句
+	prepare stmt from @v_sql;  #预处理需要执行的动态SQL，其中stmt是一个变量  
+	EXECUTE stmt;      #执行SQL语句  
+	deallocate prepare stmt;     #释放掉预处理段  
+end;
+
+DROP PROCEDURE IF EXISTS v_app_dept;
+CREATE PROCEDURE v_app_dept(in app_id varchar(50),out t1 varchar(5000))
+begin
+	/**拼接app对应部门权限sql语句**/
+
+	/* 遍历数据结束标志*/
+  DECLARE done INT DEFAULT FALSE;
+	DECLARE v_num INT DEFAULT 0;
+	declare tmp VARCHAR(500);
+	declare t VARCHAR(5000) DEFAULT '';
+	/* 声明游标  查询app对应权限所属部门*/  
+  declare myCursor cursor for SELECT d.dept_id from app_store_app_dept d where 
+		d.app_id=app_id and d.app_dept_type='dept';
+	
+  /* 将结束标志绑定到游标*/
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+	#打开游标
+	open myCursor;      
+	/* 循环开始 */  
+	myLoop: LOOP  
+		/* 移动游标并赋值 */  
+		fetch myCursor into tmp;              
+		/* do something */  
+		IF done THEN
+			LEAVE  myLoop;  #终止循环
+		END IF;
+		#多个条件加or条件
+		IF v_num <> 0 THEN 
+			set t = CONCAT(t,' or ');			
+		END IF;
+		set t = CONCAT(t," o.group_dnid LIKE '%",tmp,"%' ");#拼接查询部门条件 
+		SET v_num=v_num+1; 	
+	/* 循环结束 */  
+	end loop myLoop; 
+	/*查询部门中的帐号，拼接sql语句*/
+	set t = CONCAT("select  u.account from pasm_organization o inner JOIN pasm_user u on o.dept_id=u.dept_id where ",t);
+	#输出参数赋值
+	set t1 = t;
+end;
+/*调用存储过程*/
+call v_app_id("select t.* from app_store_app_base t where 
+					t.app_state= 'start' and IF(t.APP_ROLE='open',(t.native_type=2 or t.native_type=3 or t.apk_exist=1 or t.ipa_exist=1),"
+			,'zhangshaolei');

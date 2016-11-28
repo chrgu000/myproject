@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 30页 认证 三个主要的组件负责这项重要的事情： AbstractAuthenticationProcessingFilter: 它在基于web的认证请求中使用。处理 
+	包含认证信息的请求，如认证信息可能 是form POST提交的、SSO信息或者其 他用户提供的。创建一个部分完整的 Authentication对象以在链中传递凭证 
+	信息。 AuthenticationManager: 它用来校验用户的凭证信息，或者会抛 出一个特定的异常（校验失败的情况） 或者完整填充Authentication对象，将 
+	会包含了权限信息。 AuthenticationProvider: 它为AuthenticationManager提供凭证 校验。一些AuthenticationProvider的 
+	实现基于凭证信息的存储，如数据库， 来判定凭证信息是否可以被认可。 UserDetails： 为了存储一个安全实体的概况信息，包 含名字、e-mail、电话号码等。通常会 
+	被扩展以支持业务需求。 -->
+<logout logout-url="LogoutFilter要读取的URL（在例子中，我们改变了它的设置）。"
+	logout-success-url="用户在退出后将要被重定向到的URL。默认为/。将会通过HttpServletResponse.redirect来处理。"
+	invalidate-session="如果被设置为true，用户的HTTP session将会在退出时被失效。在一些场景下，这是必要的（如用户拥有一个购物车时）"
+	successhandler-ref="对一个LogoutSuccessHandler实现的引用" />
+ 
+ 
+ 
+ 

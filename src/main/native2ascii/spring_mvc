@@ -1,0 +1,170 @@
+配置信息
+
+spring-mvc.xml
+ 	<!-- 
+         自动搜索@Controller标注的类
+         用于指明系统从哪个路径下寻找controller，然后提前初始化这些对象。
+     -->								  
+	<context:component-scan base-package="com.ultrapower.me" />
+	
+	<!-- 返回视图处理，prefix路径前缀，suffix路径后缀，如返回index，路径为：/WEB-INF/views/index.jsp -->
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp"></property>
+	</bean>  
+
+
+**********************注意事项******************************
+当使用springmvc+hibernate配置事物无效、不起作用，或者报错：No Hibernate Session bound to thread, and configuration does not allow creation of non-transactional one here
+时，需要把事物相关配置放到springmvc的配置文件中，在web.xml中加载springmvc时，初始化contextConfigLocation参数来加载配置文件
+
+原因：
+Spring容器优先加载由ServletContextListener（对应applicationContext.xml）产生的父容器，而SpringMVC（对应mvc_dispatcher_servlet.xml）产生的是子容器。
+***子容器Controller进行扫描装配时装配的@Service注解的实例，是没有经过事务加强处理，即没有事务处理能力的Service***，
+而父容器进行初始化的Service是保证事务的增强处理能力的。如果不在子容器中将Service exclude掉，此时得到的将是原样的无事务处理能力的Service。
+
+***经试验，这个问题只有在使用注解时才会出现(@service)，使用xml配置service不会出现
+要实现事务，必须使service层在control之前被扫描，否则control中装载的service不包含事务增强。
+**********************注意事项******************************
+
+spring中${adminPath}，是通过在配置在了某个property 文件里，之后通过 ${变量名} 进行的参数抓取
+spring4.0以上版本中新增了requestMapping中配置项替换的功能。注意：spring4以下的版本是不支持的！！！
+详见：http://www.iteye.com/problems/98926
+
+web.xml配置
+<!-- spring 使用listener进行加载spring配置文件 整合部分-->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			classpath:spring-*.xml
+		</param-value>
+	</context-param>
+<!-- 	spring listener -->
+	<listener>
+		<listener-class>
+			org.springframework.web.context.ContextLoaderListener
+		</listener-class>
+	</listener>
+<!-- 	springmvc-servlet -->
+	 <servlet>
+		<servlet-name>springmvc</servlet-name>
+		<servlet-class>
+			org.springframework.web.servlet.DispatcherServlet
+		</servlet-class>		
+<!-- 		没有配置contextConfigLocation时， spring默认加载/WEB-INF/springmvc-servlet.xml的配置文件 -->
+		<init-param>
+			<param-name>contextConfigLocation</param-name>							 
+			<param-value>classpath:spring-mvc.xml</param-value>
+		</init-param>	
+<!--		相同的servlet如果load-on-startup的值越小,加载优先级越高 -->
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>springmvc</servlet-name>
+		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>	
+	
+
+加载顺序：listener>context-param>servlet，未经验证
+
+当url-pattern配置为/时，无法访问静态资源，解决方案有两种。
+
+一、在web.xml配置defaultServlet，路径映射，如：
+	<servlet-mapping>   
+         <servlet-name>default</servlet-name>   
+         <url-pattern>*.js</url-pattern>   
+     </servlet-mapping> 
+   指明对于如上资源文件不采用spring的过滤器，关于default是tomcat配置的一个servlet，“DefaultServlet被定义在$CATALINA_HOME/conf/web.xml中，配置文件中被定义的东西会在Tomcat启动的时候 被加载，对所有的webapp都有效。DefaultServlet在Tomcat中主要是做目录列表（Directory Listing）用指明对于如上资源文件不采用spring的过滤器
+    Tomcat, Jetty, JBoss, and GlassFish  默认 Servlet的名字 -- "default"
+	Google App Engine 默认 Servlet的名字 -- "_ah_default"
+	Resin 默认 Servlet的名字 -- "resin-file"
+	WebLogic 默认 Servlet的名字  -- "FileServlet"
+	WebSphere  默认 Servlet的名字 -- "SimpleFileServlet" 
+  如果不管用，要写在DispatcherServlet的前面， 让 defaultServlet先拦截，这个就不会进入Spring了 
+  
+  当url-pattern配置为/*，可以走到Action中，但转发到jsp时再次被拦截，不能访问到jsp。
+  
+
+二、在spring-mvc配置文件中添加default-servlet-handler或者<mvc:resources mapping="/javascript/**"   location="/javascript"/>
+<!-- 对特定应用服务器的固有Servlet映射进行处理,主要用于映射/** -->
+	<mvc:default-servlet-handler/>
+  servlet在找页面时，走的是dispatcherServlet路线。找不到的时候会报404
+    加上这个默认的servlet时候，servlet在找不到的时候会去找静态的内容。
+
+<mvc:resources mapping="/javascript/**"   location="/javascript"/>没有试过
+
+当return "forward:url"或者return "redirect:url"时，不是返回到前面页面，而是根据url找controller
+两才不同的是前者是转发，后者是重定向
+
+@PathVariable("id") Long id作为url传递过来的参数，及"aa/{id}"
+@RequestParam(value="a",required=false) String a,可以直接获取url中传递过来的参数,如url为："aa/id?a=dfs"
+
+******************************参数设置*****************************************
+spring参数设置，也可以直接写入方法参数，如前台传递xxx?name=test&password=123456
+后台可以通过 public String xxx(String name,User user)来接收参数
+
+这里必须用password=123456"而不是user.password=123456，因为默认情况下springMVC是不支持user.password这种传参方式的。
+
+如果需要使用 对象.属性 需要在controller中添加一个前缀绑定：
+	@InitBinder("user")    
+    public void initBinder2(WebDataBinder binder) {    
+            binder.setFieldDefaultPrefix("user.");    
+    }    
+这样在使用xxx?name=test&user.password=123456接收到的参数就不为空了
+******************************参数设置*****************************************
+
+**************************************@ResponseBody start**************************************************
+作用： 
+      该注解用于将Controller的方法返回的对象，通过适当的HttpMessageConverter转换为指定格式后，写入到Response对象的body数据区。
+使用时机：
+      返回的数据不是html标签的页面，而是其他某种格式的数据时（如json、xml等）使用；
+MappingJacksonHttpMessageConverter 调用了 objectMapper.writeValue(OutputStream stream, Object)方法，
+使用@ResponseBody注解返回的对象就传入Object参数内。
+
+可以把对象转换为json数据返回，如：
+@ResponseBody
+@RequestMapping("/aaa)
+public List<User> handle() {                   public User handle(){
+  retrun new ArrayList<User>();						retrun new ArrayList<User>();				
+}											   }	
+可以返回json串为user的数组，和user json串。
+
+返回对象转换为json时，需要导入jackson2.X的jar包：jackson-annotations-2.4.4.jar、jackson-core-2.4.4.jar、jackson-databind-2.4.4.jar。
+并且在配置文件中加入：<mvc:annotation-driven />
+否则返回数据时，jsp会报错：NetworkError: 406 Not Acceptable
+
+java.net.ConnectException: Connection refused: connect
+
+
+若返回的对象为已经格式化好的json串时，不使用@RequestBody注解，而应该这样处理：
+1、response.setContentType("application/json; charset=UTF-8");
+2、response.getWriter().print(jsonStr);
+直接输出到body区，然后的视图为void,
+如:
+@ResponseBody
+@RequestMapping("/aaa)
+public void handle(Writer writer) throws IOException {  
+  String body = "Dfsafdas";
+  writer.write(body);  
+}
+
+**************************************@ResponseBody end**************************************************
+
+
+
+
+**************************************@RequestBody start**************************************************
+该注解常用来处理Content-Type: 不是application/x-www-form-urlencoded编码的内容，例如application/json, application/xml等；
+它是通过使用HandlerAdapter 配置的HttpMessageConverters来解析post data body，然后绑定到相应的bean上的。
+因为配置有FormHttpMessageConverter，所以也可以用来处理 application/x-www-form-urlencoded的内容，处理完的结果放在一个MultiValueMap<String, String>里，这种情况在某些特殊需求下使用，详情查看FormHttpMessageConverter api;
+示例代码：
+@RequestMapping(value = "/something", method = RequestMethod.PUT)  
+public void handle(@RequestBody String body, Writer writer) throws IOException {  
+  writer.write(body);  
+}
+**************************************@RequestBody end**************************************************
+

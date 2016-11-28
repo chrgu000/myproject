@@ -1,0 +1,55 @@
+nginx 反向代理服务器 负载均衡
+
+反向代理（Reverse Proxy）方式是指以代理服务器来接受internet上的连接请求，然后将请求转发给内部网络上的服务器，并将从服务器上得到的结果返回给internet上请求连接的客户端，此时代理服务器对外就表现为一个服务器。  
+这里讲得很直白。反向代理方式实际上就是一台负责转发的代理服务器，貌似充当了真正服务器的功能，但实际上并不是，代理服务器只是充当了转发的作用，并且从真正的服务器那里取得返回的数据。这样说，其实nginx完成的就是这样的工作。我们让nginx监听一个端口，譬如80端口，但实际上我们转发给在8080端口的tomcat，由它来处理真正的请求，当请求完成后，tomcat返回，但数据此时没直接返回，而是直接给nginx，由nginx进行返回，这里，我们会以为是nginx进行了处理，但实际上进行处理的是tomcat。
+说到上面的方式，也许很多人又会想起来，这样可以把静态文件交由nginx来进行处理。对，很多用到nginx的地方都是作为静态伺服器，这样可以方便缓存那些静态文件，比如CSS，JS，html，htm等文件。
+
+配置文件conf/nginx.conf
+
+server_name: 暂时不清楚作用，可有可无
+如果nginx中只配置一个server域的话，则nginx是不会去进行server_name的匹配的。因为只有一个server域，
+也就是这有一个虚拟主机，那么肯定是发送到该nginx的所有请求均是要转发到这一个域的，即便做一次匹配也是没有用的。
+还不如干脆直接就省了。如果一个http域的server域有多个，nginx才会根据$hostname去匹配server_name
+进而把请求转发到匹配的server域中。此时的匹配会按照匹配的优先级进行，一旦匹配成功进不会再进行匹配，关于具体的匹配规则可以参见nginx官网提供的文档。
+
+server {  //可以配置多个server
+	listen 8899; //表示当前的代理服务器监听的端口，默认的是监听80端口。注意，如果我们配置了多个server，这个listen要配置不一样，不然就不能确定转到哪里去了。
+	#server_name localhost; //表示监听到之后需要转到哪里去，这时我们直接转到本地，这时是直接到nginx文件夹内。
+	
+	location /meopen { 						//表示匹配的路径，配置了/表示所有请求都被匹配到这里
+		proxy_pass http://meopenServer; 	
+		#proxy_pass http://localhost:8080;	//表示代理路径，相当于转发
+		#root html							//里面配置了root这时表示当匹配这个请求的路径时，将会在这个文件夹内寻找相应的文件，这里对我们之后的静态文件伺服很有用。
+		#index index.html index.htm			//当没有指定主页时，默认会选择这个指定的文件，它可以有多个，并按顺序来加载，如果第一个不存在，则找第二个，依此类推。
+	}
+	
+	location ~ \.jsp$ {  					//.jsp文件拦截
+        proxy_pass http://localhost:8080;  
+	}  
+          
+	location ~ \.(html|js|css|png|gif)$ {  //.html|js|css|png|gif拦截
+	    root D:/software/developerTools/server/apache-tomcat-7.0.8/webapps/ROOT;  
+	}  
+}
+//upstream中的server元素必须要注意，不能加http://，但proxy_pass中必须加。
+upstream meopenServer{  
+	//一个服务器挂了的情况下连到另外一个,需要配置多个server
+	server localhost:8080 weight=3; //有时我们就不想它挂的时候访问另外一个，而只是希望一个服务器访问的机会比另外一个大，这个可以在weight=数字 来指定，数字越大，表明请求到的机会越大。
+	server localhost:8080 weight=1;  
+    server localhost:9999 weight=5; 
+}
+
+upstream appServer {
+	server localhost;
+}
+
+
+nginx有端口拦截时，会匹配对应server中的location路径，有匹配时转发到对应地址，没有匹配时会访问到nginx 404页面
+直接访问有端口拦截的地址根目录(localhost:8899)，会转到nginx欢迎界面
+nginx默认拦截80端口,如localhost会到nginx欢迎界面，但localhost/app就不会拦截了
+
+
+nginx命令：
+启动：start nginx 或	nginx.exe 			停止：nginx -s stop	或	nginx -s quit
+重新载入Nginx：nginx -s reload			重新打开日志文件：nginx -s reopen				查看Nginx版本：nginx -v
+

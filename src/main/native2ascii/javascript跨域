@@ -1,0 +1,9 @@
+根据mozilla网站的描述。
+ 概念：只要协议、域名、端口有任何一个不同，都被当作是不同的域。
+1.域根据3个特征来描述，协议，端口与主机名 
+也就是说
+ 
+http://www.cj.com/xx/1.aspx 与下面的url是不同的域 
+https://www.cj.com/xx/2.aspx  //协议不同 
+http://www.fuck.com/xx/3.aspx //主机不同
+http://www.cj.com:8080/3.aspx //端口不同。。。

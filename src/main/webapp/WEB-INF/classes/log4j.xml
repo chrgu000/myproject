@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration debug="false"
+	xmlns:log4j="http://jakarta.apache.org/log4j/">
+	<appender name="rfa" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="D:/springLog4j/tcert.log" />
+		<param name="Append" value="true" />
+		<param name="MaxFileSize" value="10240000" />
+		<param name="MaxBackupIndex" value="10" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm} %p (%c:%L)- %m%n" />
+		</layout>
+	</appender>
+	<appender name="console" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm} %p [%c] - &lt;%m&gt;%n"/>
+        </layout>
+    </appender>
+	
+	<!-- Loggers -->
+	<logger name="org.springframework">
+		<level value="WARN" />
+		<appender-ref ref="rfa" />
+	</logger>
+	<logger name="org.hibernate">
+		<level value="WARN" />
+		<appender-ref ref="rfa" />
+	</logger>
+	<logger name="cn.com.eduedu">
+		<level value="INFO" />
+		<appender-ref ref="rfa" />
+	</logger>
+	<logger name="cn.edu.jszg">
+		<level value="INFO" />
+	</logger>
+	<root>
+		<level value="WARN" />
+		<appender-ref ref="rfa" />
+	</root>
+</log4j:configuration>

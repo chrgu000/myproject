@@ -1,0 +1,97 @@
+Spring注解@Component、@Repository、@Service、@Controller区别
+
+Spring 2.5 中除了提供 @Component 注释外，还定义了几个拥有特殊语义的注释，
+它们分别是：@Repository、@Service 和 @Controller。在目前的 Spring 版本中，
+这 3 个注释和 @Component 是等效的，但是从注释类的命名上，很容易看出这 3 个注释分别和持久层、业务层和控制层（Web 层）相对应。
+虽然目前这 3 个注释和 @Component 相比没有什么新意，但 Spring 将在以后的版本中为它们添加特殊的功能。
+所以，如果 Web 应用程序采用了经典的三层分层结构的话，最好在持久层、业务层和控制层分别采用 @Repository、@Service 和 @Controller 
+对分层中的类进行注释，而用 @Component 对那些比较中立的类进行注释。
+
+使用spring注解
+1.在 spring的配置文件里面只需要加上<context:component-scan base-package=”com.eric.spring”> 
+其中base-package为需要扫描的包（含所有子包）
+
+2.@Component、@Repository、@Service、@Controller使用
+
+@Repository持久层组件，用于标注数据访问组件，即DAO组件
+使用@Repository标注在接口的实现类上，bean默认名字为实现类首字母小写，如果需要改变bean的名称使用：@Repository("beanName")
+
+@Service使用方法同@Repository，@component标注在组件类名上，使用同@Repository
+@Controller可以标注在action上(目前没使用过，只在spring的mvc中使用过)，使用方法 ：@Controller("访问路径")
+
+bean默认是单例的，如果需要使用其它作用范围的 Bean，可以通过 @Scope 注解来达到目标，可以使用@Service(“beanName”)@Scope(“prototype”)来改变。
+
+3.spring注入bean,使用@Autowired和@Resource
+
+@Autowired与@Resource都可以用来装配bean.都可以写在字段上,或写在setter方法上(写在字段上setter方法可以省略)。
+
+1）在目标接口前面标上@Autowired注解使得接口可以被容器注入，@Autowired按byType自动注入，会自动匹配类型，如果没有找到适合的类型会报错
+      如果需要允许可以注入空值，可以设置它的required属性为false，如：@Autowired(required=false)
+      如果接口存在多个实现类，需要使用@Qualifier标注到底注入哪个实现类，否则会报错，如：@Autowired() @Qualifier("baseDao")
+
+2）@Resource的作用相当于@Autowired，@Resource默认按 byName自动注入。@Resource有两个属性是比较重要的，分是name和type，
+   Spring将@Resource注解的name属性解析为bean的名字，而type属性则解析为bean的类型。所以如果使用name属性，则使用byName的自动注入策略，
+       而使用type属性时则使用byType自动注入策略。如果既不指定name也不指定type属性，这时将通过反射机制使用byName自动注入策略。
+       
+   @Resource（这个注解属于J2EE的），默认安装名称进行装配，名称可以通过name属性进行指定，如果没有指定name属性，当注解写在字段上时，
+       默认取字段名进行安装名称查找，如果注解写在setter方法上默认取属性名进行装配。当找不到与名称匹配的bean时才按照类型进行装配。
+       但是需要注意的是，如果name属性一旦指定，就只会按照名称进行装配。       
+       
+   2015-10-23测试
+   resource注解只在字段上使用，不写setXX方法，注入不上
+   name属性不管用，默认按照setXX方法的名称来匹配
+
+@Resource装配顺序
+1. 如果同时指定了name和type，则从Spring上下文中找到唯一匹配的bean进行装配，找不到则抛出异常
+2. 如果指定了name，则从上下文中查找名称（id）匹配的bean进行装配，找不到则抛出异常
+3. 如果指定了type，则从上下文中找到类型匹配的唯一bean进行装配，找不到或者找到多个，都会抛出异常
+4. 如果既没有指定name，又没有指定type，则自动按照byName方式进行装配；如果没有匹配，则回退为一个原始类型进行匹配，如果匹配则自动装配；
+
+推荐使用：@Resource注解在字段上，这样就不用写setter方法了，并且这个注解是属于J2EE的，减少了与spring的耦合。这样代码看起就比较优雅    
+@Resource 注解类位于 Spring 发布包的 lib/j2ee/common-annotations.jar 类包中，因此在使用之前必须将其加入到项目的类库中。
+
+4. @PostConstruct 和 @PreDestroy  
+
+Spring 容器中的 Bean 是有生命周期的，Spring 允许在 Bean 在初始化完成后以及 Bean 销毁前执行特定的操作，
+您既可以通过实现 InitializingBean/DisposableBean 接口来定制初始化之后 / 销毁之前的操作方法，也可以通过 <bean> 元素的 
+init-method/destroy-method 属性指定初始化之后 / 销毁之前调用的操作方法。
+
+JSR-250 为初始化之后/销毁之前方法的指定定义了两个注解类，分别是 @PostConstruct 和 @PreDestroy，这两个注解只能应用于方法上。
+标注了 @PostConstruct 注解的方法将在类实例化后调用，而标注了 @PreDestroy 的方法将在类销毁之前调用。
+
+我们知道，不管是通过实现 InitializingBean/DisposableBean 接口，还是通过 <bean> 元素的 init-method/destroy-method 属性进行配置，
+都只能为 Bean 指定一个初始化 / 销毁的方法。但是使用 @PostConstruct 和 @PreDestroy 注解却可以指定多个初始化 / 销毁方法，
+那些被标注 @PostConstruct 或 @PreDestroy 注解的方法都会在初始化 / 销毁时被执行。
+
+
+
+
+
+
+ 而我们前面所介绍的 AutowiredAnnotationBeanPostProcessor 和 CommonAnnotationBeanPostProcessor 就是处理这些注释元数据的处理器。
+ 但是直接在 Spring 配置文件中定义这些 Bean 显得比较笨拙。
+ Spring 为我们提供了一种方便的注册这些 BeanPostProcessor 的方式，这就是 <context:annotation-config/>。
+ 
+ <context:annotation-config/> 将隐式地向 Spring 容器注册 AutowiredAnnotationBeanPostProcessor、CommonAnnotationBeanPostProcessor、
+ PersistenceAnnotationBeanPostProcessor 以及 equiredAnnotationBeanPostProcessor 这 4 个 BeanPostProcessor。
+  在配置文件中使用 context 命名空间之前，必须在 <beans> 元素中声明 context 命名空间。 
+  
+这里，所有通过 <bean> 元素定义 Bean 的配置内容已经被移除，仅需要添加一行 <context:component-scan/> 配置就解决所有问题了——Spring XML 
+配置文件得到了极致的简化（当然配置元数据还是需要的，只不过以注释形式存在罢了）。
+<context:component-scan/> 的 base-package 属性指定了需要扫描的类包，类包及其递归子包中所有的类都会被处理。
+
+值得注意的是 <context:component-scan/> 配置项不但启用了对类包进行扫描以实施注释驱动 Bean 定义的功能，
+同时还启用了注释驱动自动注入的功能（即还隐式地在内部注册了 AutowiredAnnotationBeanPostProcessor 和 CommonAnnotationBeanPostProcessor），
+因此当使用 <context:component-scan/> 后，就可以将 <context:annotation-config/> 移除了。    
+
+
+spring注解xml配置和jar包
+需要jar包spring-context.jar
+xml配置：添加xmlns:context="http://www.springframework.org/schema/context"
+在xsi:schemaLocation中添加http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+
+
+<beans default-autowire="byName" default-lazy-init="true">
+default-autowire="byName"可以实现按类名称自动装载类，省去<ref...>了
+字段必须有setXXX方法
+        

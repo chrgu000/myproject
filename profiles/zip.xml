@@ -1,0 +1,57 @@
+<assembly
+	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+	
+<!-- 	自定义打包名称，默认：artifactId-version-id -->
+	<id>release</id>
+	<formats>
+<!-- 		打包格式 tar.zip war zip dir -->
+		<format>dir</format> 
+	</formats> 
+<!-- 	fileSets允许用户通过文件或目录的粒度来控制打包。 -->
+	<fileSets>
+		<fileSet>
+<!-- 			需要打包的路径 -->
+			<directory>${project.build.outputDirectory}/com/ultrapower/me/utils</directory>
+			<!-- 过滤 -->
+			<excludes>
+				<exclude>*.xml</exclude>
+			</excludes>
+<!-- 			打包后输出的路径 -->
+<!-- 			<outputDirectory>/</outputDirectory> -->
+		</fileSet>
+	</fileSets>
+	
+<!-- 	files部分定义了打包单独的文件 -->
+	<files>  
+        <file>  
+            <source>profiles/zip.xml</source>  
+            <outputDirectory>/</outputDirectory>  
+        </file>  
+    </files> 
+<!-- 	
+	dependencySets用来定义选择依赖并定义最终打包到什么目录，
+	这里我们声明的一个depenencySet默认包含所有所有依赖，
+	而useProjectArtifact表示将项目本身生成的构件也包含在内，
+	最终打包至输出包内的lib路径下（由outputDirectory指定）。
+	 -->
+	<dependencySets>
+		<dependencySet>
+			<includes>
+				<include>
+<!-- 					指定jar包 groupId:artifactId:version -->
+					ultra.open.auth:OpenAuth_WebClient
+				</include>
+			</includes>
+<!-- 			
+			当前项目构件是否包含在这个依赖集合里。 
+			useProjectArtifact表示将项目本身生成的构件也包含在内，最终打包至输出包内的lib路径下（由outputDirectory指定）。
+			-->
+<!-- 			<useProjectArtifact>false</useProjectArtifact> -->
+			<!-- 将scope为runtime的依赖包打包到lib目录下。 -->
+<!-- 			<outputDirectory>lib</outputDirectory> -->
+<!-- 			<scope>runtime</scope> -->
+		</dependencySet>
+	</dependencySets>
+</assembly>  

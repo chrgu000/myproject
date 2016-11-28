@@ -1,0 +1,16 @@
+_trigger函数
+扩展插件的一个最简单的办法就是添加回调功能， 这样使用者就可以根据插件状态的改变来采取行动。
+_trigger 方法介绍三个参数： _trigger("函数名称",对象element,{name:value,name1:value1})
+
+函数名称，触发回调的本地事件对象以及相关的数据。虽然其中只有回调名称是必须的， 不过其它参数对使用者来说挺有用的。
+第三个参数中的对象也可以是函数,callback:function callback(){}
+
+使用：
+$("#foo").widget({
+	函数名称:function(event,data){
+		data级参数对象，可以通过data.name获取参数的值
+	}
+});
+
+调用公用方法：ele.widget("函数名");
+调用公用带参数方法：ele.widget("函数名","参数");

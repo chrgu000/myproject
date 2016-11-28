@@ -1,0 +1,6 @@
+实体类user，需实现Authentication接口
+UserService需实现AuthenticationProvider接口
+filter需继承AbstractAuthenticationProcessingFilter类，通过父类构造方法可以指定访问的url(super.("/adminLogin"))
+
+访问时先通过filter的attemptAuthentication方法，当生成authentication时，调用this.getAuthenticationManager().authenticate(token);
+执行userService中继承的authentication方法返回authentication的实现

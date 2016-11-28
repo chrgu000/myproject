@@ -1,0 +1,24 @@
+占位符
+<bean
+	class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	<property name="locations">
+		<list>
+			<value>/WEB-INF/mail.properties</value>//注意这两种value值的写法
+			<!-- 所有的应用程序全局变量配置，请集中在这里配置 -->
+			<value>classpath:cfgs.properties</value>
+		</list>
+	</property>
+	<!--可以指定外部文件的编码(可选)-->
+	 <property name="fileEncoding">
+      	<value>UTF-8</value>
+    </property>
+</bean>
+
+PropertyPlaceholderConfigurer是个bean工厂后置处理器的实现，也就是BeanFactoryPostProcessor接口的一个实现。
+PropertyPlaceholderConfigurer可以将上下文（配置文件）中的属性值放在另一个单独的标准java Properties文件中去。
+在XML文件中用${key}替换指定的properties文件中的值。这样的话，只需要对properties文件进行修改，而不用对xml配置文件进行修改。
+
+PropertyPlaceholderConfigurer如果在指定的Properties文件中找不到你想使用的属性，它还会在Java的System类属性中查找。
+我们可以通过System.setProperty(key, value)或者java中通过-Dnamevalue来给Spring配置文件传递参数。
+
+在配置文件中使用${属性名}来获取值

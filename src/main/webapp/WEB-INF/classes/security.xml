@@ -1,0 +1,56 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+          http://www.springframework.org/schema/security
+          http://www.springframework.org/schema/security/spring-security-3.0.xsd">
+
+	<!-- use-expressions:Spring 表达式语言配置访问控制 -->
+	<security:http auto-config="true" use-expressions="false">
+		<security:intercept-url pattern="/statics/**" filters="none"/>
+		<security:intercept-url pattern="/home/*" access="ROLE_USER" />
+		
+		<!--默认登录页面   default-target-url默认跳转的页面   always-use-default-target登录成功后默认进入home.jsp -->
+		<security:form-login login-page="/portal/login" default-target-url="/home/index" 
+				always-use-default-target="true" login-processing-url="/login"/>
+		<!-- 
+		退出配置   logout-success-url:退出成功后跳转的页面 ,
+		如果session配置了invalid-session-url默认跳转到指定的页面，logout-success-url不起作用
+		-->
+		<security:logout logout-url="/logout"
+			logout-success-url="/portal/login" />
+			
+		<intercept-url pattern="/jsp/sms.jsp" access="IS_AUTHENTICATED_ANONYMOUSLY"/>	
+		<!-- 过滤器 -->
+		<security:custom-filter ref="pwdAuthentication" after="SECURITY_CONTEXT_FILTER"/>
+		
+		<!--管理会话 invalid-session-url:session失效后跳转到的页面   invalid-session-url="/sessionTimeout.jsp"-->
+		<security:session-management >
+			<security:concurrency-control max-sessions="1"/>
+		</security:session-management>
+		
+		
+	</security:http>
+
+	<security:authentication-manager alias="authenticationManager">
+		<!-- <security:authentication-provider>
+			<security:user-service>
+				<security:user name="admin" password="123456"
+					authorities="ROLE_USER" />
+			</security:user-service>
+		</security:authentication-provider>
+		 -->
+		<!-- 注意这里的ref属性定义。如果没有使用CAS认证，此处一般定义user-service-ref属性。这两个属性的区别在于
+			ref：直接将ref依赖的bean注入到AuthenticationProvider的providers集合中
+			user-service-ref：定义DaoAuthenticationProvider的bean注入到AuthenticationProvider的providers集合中，
+			并且DaoAuthenticationProvider的变量userDetailsService由user-service-ref依赖的bean注入。 -->
+		<security:authentication-provider ref="userService"></security:authentication-provider>
+	</security:authentication-manager>
+	
+	<bean id="pwdAuthentication" class="spring.security.PwdAuthenticationProcessingFilter">
+		<property name="authenticationManager" ref="authenticationManager"></property>
+		<property name="faildPage" value="/portal/login"></property>
+	</bean>
+	
+</beans>

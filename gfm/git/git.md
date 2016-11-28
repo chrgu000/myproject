@@ -84,6 +84,10 @@ To github.com:baozc/test.git
 - `git init` 初始化仓库，如果初始化成功，执行了 `git init`命令的目录下就会生成 .git 目录。这个 .git 目录里存储着管理当前目录内容所需的仓库数据。
 - `git status` 查看仓库的状态，工作树和仓库在被操作的过程中，状态会不断发生变化。在 Git 操作过程中时常用 `git status`命令查看当前状态，可谓基本中的基本。
 - `git add` 向暂存区中添加文件，如果只是用 Git 仓库的工作树创建了文件，那么该文件并不会被记入 Git 仓库的版本管理对象当中。要想让文件成为 Git 仓库的管理对象，就需要用 git add命令将其加入暂存区（Stage 或者 Index）中。暂存区是提交之前的一个临时区域。
+	- `git add xx`命令可以将xx文件或目录添加到暂存区
+	- `git add -A .`来一次添加所有改变的文件。注意 -A 选项后面还有一个句点. `git add -A`表示添加所有内容
+	- `git add .` 表示添加新文件和编辑过的文件不包括删除的文件
+	- `git add -u` 表示添加编辑或者删除的文件，不包括新添加的文件。
 - `git commit` 保存仓库的历史记录
 	+ 格式 `git commit -m description`，例 `git commit -m "提交描述"`。**windows下，请注意使用双引号**，否则可能出现错误：`error: pathspec 'commit'' did not match any file(s) known to git.`
 	+ 如果想要记述得更加详细，请不加 -m，直接执行 `git commit`命令。执行后编辑器就会启动。在编辑器中记述提交信息的格式如下：

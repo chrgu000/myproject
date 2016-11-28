@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+<!-- -->
+<!-- 	<import resource="security.xml"/> -->
+ 
+
+    <bean id="testEntity" class="spring.po.testEneity">
+    	<property name="name" value="test"></property>
+    </bean>
+    
+    <bean id="user" class="spring.po.User">
+    
+    </bean>
+    <bean id="role" class="spring.po.Role"></bean>
+
+	<bean id="userService" class="spring.service.impl.UserServiceImpl"></bean>
+
+</beans>

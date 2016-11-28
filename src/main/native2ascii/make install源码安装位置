@@ -1,0 +1,5 @@
+Mac和所有类Unix系统一样的，首先，使用make命令只是进行了编译，还需要make install来安装
+
+软件安装位置，是由Makefile决定默认安装位置的，一般情况下，都是在/usr/local目录，也可以通过指定prefix=/path/to来决定
+Unix软件都是绿色的，并没有windows下所谓注册表的说法，所以直接可以删除的
+如果没有redis，只能是因为Path环境变量没有包含redis的bin目录

@@ -1,0 +1,30 @@
+ mysqld是MySQL服务器。下面讨论MySQL服务器的配置：
+·         服务器支持的启动选项
+
+·         如何设置服务器SQL模式
+
+·         服务器系统变量
+
+·         服务器状态变量
+5.3.1. mysqld命令行选项
+
+当启动mysqld服务器时，你可以使用4.3节，“指定程序选项”中描述的方法指定程序选项。最常用的方法是在选项文件中或在命令行提供选项。
+但是，在大多数情况下，希望服务器每次运行时使用相同的选项。最好的方法是确保将它们列在选项文件中。参见4.3.2节，“使用选项文件”。
+
+mysqld从[mysqld]和[server]组读取选项。mysqld_safe从[mysqld]、[server]、[mysqld_safe]和[safe_mysqld]组读取选项。
+mysql.server从 [mysqld]和[mysql.server]组读取选项。嵌入式MySQL服务器通常从[server]、[embedded]和[xxxxx_SERVER]组读取选项，
+其中xxxxx是服务器嵌入的应用程序名。
+
+ mysql：MySQL命令行工具
+
+mysql是一个简单的SQL外壳(有GNU readline功能)。它支持交互式和非交互式使用。当交互使用时，查询结果采用ASCII表格式。
+当采用非交互式(例如，用作过滤器)模式时，结果为tab分割符格式。可以使用命令行选项更改输出格式。
+如果由于结果较大而内存不足遇到问题，使用--quick选项。这样可以强制mysql从服务器每次一行搜索结果，
+而不是检索整个结果集并在显示之前不得不将它保存到内存中。使用mysql_use_result()而不是mysql_store_result()来搜索结果集。
+使用mysql很简单。从命令解释符提示来调用它：
+shell> mysql db_name
+或：
+shell> mysql --user=user_name --password=your_password db_name
+这样输入一个SQL语句，用‘；’、\g或者\G结尾并按回车键。
+你可以这样运行一个脚本：
+shell> mysql db_name < script.sql > output.tab

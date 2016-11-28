@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html ng-app="RongIMDemo">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <meta name="full-screen" content="yes">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <meta content="telephone=no" name="format-detection">
+    <title>融云 Demo - Web SDK</title>
+    <meta name="keywords"
+          content="融云,即时通讯,即时通讯云,即时通信云,移动 IM,开源 IM,IM 云服务,即时聊天软件,VOIP,移动客服,在线客服,免费,App 开发者服务，融云 Demo ，Web Demo，即时通讯 Demo"/>
+    <meta name="description" content="融云 Web Demo 下载体验！"/>
+    <link href="static/css/main.css?v=2" rel="stylesheet">
+    <link rel="shortcut icon" href="favicon.ico">
+    
+<!--     获取官方 Web SDK (目前版本为 2.2.4 ) 地址 -->
+    <script src="http://cdn.ronghub.com/RongIMLib-2.2.4.min.js"></script> 
+    
+    <script src='../static/js/jquery-1.8.2.min.js'></script>
+
+	<script type="text/javascript" src="dist/RongIMWidget.js"></script>
+	<link rel="stylesheet" type="text/css" href="dist/css/RongIMWidget.css"/>
+
+    <script type="text/javascript">
+    	$(function(){
+    		// 初始化
+    		// RongIMClient.init(appkey, [dataAccessProvider],[options]);
+    		// appkey:官网注册的appkey。
+    		// dataAccessProvider:自定义本地存储方案的实例，不传默认为内存存储，自定义需要实现WebSQLDataProvider所有的方法，此参数必须是传入实例后的对象。
+            RongIMClient.init("x4vkb1qpvrkvk");
+    		
+         // 从您的应用服务器请求，以获取 Token。在本示例中我们直接在下面 hardcode 给 token 赋值。
+//             var token = getTokenFromAppServer();
+            // 此处直接 hardcode 给 token 赋值，请替换为您自己的 Token。
+            var token = "";
+            
+            $.ajax({
+                type: "get",
+                async: false,
+                url: "http://met.ultrapower.com.cn:38096/MeOpen/mobile/getRongCloudToken?account=baozhichao&jsonp=true",
+                dataType: "jsonp",
+                jsonp: "callback",//传递给请求处理程序或页面的，用以获得jsonp回调函数名的参数名(一般默认为:callback)
+                jsonpCallback:"getToken",//自定义的jsonp回调函数名称，默认为jQuery自动生成的随机函数名，也可以写"?"，jQuery会自动为你处理数据
+                success: function(data){
+					if(data){
+						token = data;
+						console.log("token is "+token);
+						
+						initMes(token);
+					}               	
+                },
+                error:function(XMLHttpRequest, textStatus, errorThrown){
+                	alert(XMLHttpRequest+"---"+textStatus+"---"+errorThrown);
+                }
+            });
+            
+            var demo = angular.module("demo", ["RongWebIMWidget"]);
+    	});
+    	
+    	function initMes(token){
+    		// 设置连接监听状态 （ status 标识当前连接状态）
+            // 连接状态监听器
+            RongIMClient.setConnectionStatusListener({
+               onChanged: function (status) {
+                   switch (status) {
+                       //链接成功
+                       case RongIMLib.ConnectionStatus.CONNECTED:
+                           console.log('链接成功');
+                           break;
+                       //正在链接
+                       case RongIMLib.ConnectionStatus.CONNECTING:
+                           console.log('正在链接');
+                           break;
+                       //重新链接
+                       case RongIMLib.ConnectionStatus.DISCONNECTED:
+                           console.log('断开连接');
+                           break;
+                       //其他设备登录
+                       case RongIMLib.ConnectionStatus.KICKED_OFFLINE_BY_OTHER_CLIENT:
+                           console.log('其他设备登录');
+                           break;
+                         //网络不可用
+                       case RongIMLib.ConnectionStatus.NETWORK_UNAVAILABLE:
+                         console.log('网络不可用');
+                         break;
+                       }
+               }});
+
+            // 消息监听器
+            RongIMClient.setOnReceiveMessageListener({
+               // 接收到的消息
+               onReceived: function (message) {
+                   // 判断消息类型
+                   switch(message.messageType){
+                   case RongIMClient.MessageType.TextMessage:
+                	   // 发送的消息内容将会被打印
+                       console.log(message.content.content);
+                       alert("接收到消息123："+message.getTargetId()+"----"+message.getContent());
+                       break;
+                   case RongIMClient.MessageType.ImageMessage:
+                       // do something...
+                       alert("接收到消息2："+message);
+                       break;
+                   case RongIMClient.MessageType.VoiceMessage:
+                	// 对声音进行预加载                
+                       // message.content.content 格式为 AMR 格式的 base64 码
+                       RongIMLib.RongIMVoice.preLoaded(message.content.content);
+                       alert("接收到消息3："+message);
+                       break;
+                   case RongIMClient.MessageType.RichContentMessage:
+                       // do something...
+                       alert("接收到消息："+message);
+                       break;
+                   case RongIMClient.MessageType.LocationMessage:
+                       // do something...
+                       alert("接收到消息："+message);
+                       break;
+                   case RongIMClient.MessageType.DiscussionNotificationMessage:
+                       // do something...
+                       alert("接收到消息："+message);
+                       break;
+                   case RongIMClient.MessageType.InformationNotificationMessage:
+                       // do something...
+                       alert("接收到消息："+message);
+                       break;
+                   case RongIMClient.MessageType.ContactNotificationMessage:
+                       // do something...
+                       alert("接收到消息："+message);
+                       break;
+                   case RongIMClient.MessageType.ProfileNotificationMessage:
+                       // do something...
+                       alert("接收到消息："+message);
+                       break;
+                   case RongIMClient.MessageType.CommandNotificationMessage:
+                       // do something...
+                       alert("接收到消息："+message);
+                       break;
+                   case RongIMClient.MessageType.UnknownMessage:
+                       // do something...
+                       alert("接收到消息："+message);
+                       break;
+                   default:
+                       // 自定义消息
+                       // do something...
+                	   alert("接收到消息："+message);
+                   }
+               }
+           });
+            
+         // 连接融云服务器。
+            RongIMClient.connect(token, {
+              onSuccess: function(userId) {
+                console.log("Login successfully." + userId);
+              },
+              onTokenIncorrect: function() {
+                console.log('token无效');
+              },
+              onError:function(errorCode){
+                    var info = '';
+                    switch (errorCode) {
+                      case RongIMLib.ErrorCode.TIMEOUT:
+                        info = '超时';
+                        break;
+                      case RongIMLib.ErrorCode.UNKNOWN_ERROR:
+                        info = '未知错误';
+                        break;
+                      case RongIMLib.ErrorCode.UNACCEPTABLE_PaROTOCOL_VERSION:
+                        info = '不可接受的协议版本';
+                        break;
+                      case RongIMLib.ErrorCode.IDENTIFIER_REJECTED:
+                        info = 'appkey不正确';
+                        break;
+                      case RongIMLib.ErrorCode.SERVER_UNAVAILABLE:
+                        info = '服务器不可用';
+                        break;
+                    }
+                    console.log(errorCode);
+                  }
+            }); 
+    	}
+    	
+    	//发送消息
+    	function send(){
+    		// 定义消息类型,文字消息使用 RongIMLib.TextMessage
+    		 var msg = new RongIMLib.TextMessage({content:"hello",extra:"附加信息"});
+    		 //或者使用RongIMLib.TextMessage.obtain 方法.具体使用请参见文档
+    		 //var msg = RongIMLib.TextMessage.obtain("hello");
+    		 var conversationtype = RongIMLib.ConversationType.PRIVATE; // 私聊
+    		 var targetId = "test"; // 目标 Id
+    		 RongIMClient.getInstance().sendMessage(conversationtype, targetId, msg, {
+                // 发送消息成功
+                onSuccess: function (message) {
+                    //message 为发送的消息对象并且包含服务器返回的消息唯一Id和发送消息时间戳
+                    console.log("Send successfully");
+                },
+                onError: function (errorCode,message) {
+                    var info = '';
+                    switch (errorCode) {
+                        case RongIMLib.ErrorCode.TIMEOUT:
+                            info = '超时';
+                            break;
+                        case RongIMLib.ErrorCode.UNKNOWN_ERROR:
+                            info = '未知错误';
+                            break;
+                        case RongIMLib.ErrorCode.REJECTED_BY_BLACKLIST:
+                            info = '在黑名单中，无法向对方发送消息';
+                            break;
+                        case RongIMLib.ErrorCode.NOT_IN_DISCUSSION:
+                            info = '不在讨论组中';
+                            break;
+                        case RongIMLib.ErrorCode.NOT_IN_GROUP:
+                            info = '不在群组中';
+                            break;
+                        case RongIMLib.ErrorCode.NOT_IN_CHATROOM:
+                            info = '不在聊天室中';
+                            break;
+                        default :
+                            info = x;
+                            break;
+                    }
+                    console.log('发送失败:' + info);
+                }
+            });
+    	}
+    </script>
+</head>
+<body>
+	<h3 onclick="send();"><a href="javascript:void(0)">发送测试消息</a></h3>
+	<rong-widget></rong-widget>
+</body>
+
+	<audio style="width: 0px;height: 0px;display: none;" src="static/images/sms-received.mp3" controls="controls">
+</audio>
+</html>
