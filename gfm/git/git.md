@@ -49,6 +49,36 @@ Enter passphrase for key '/c/Users/ww/.ssh/id_rsa': (这里需要输入创建SSH
 ```
 Hi baozc! You've successfully authenticated, but GitHub does not provide shell access.
 ```
+
+## 连接github出错，解决
+> 如果出现错误：
+>
+$ git push mp master
+ssh: connect to host github.com port 22: Connection timed out
+fatal: Could not read from remote repository.
+
+>Please make sure you have the correct access rights
+and the repository exists.
+
+可以采用如下方法：
+```
+$ vim .ssh/config
+
+Host github.com
+User fulinux@sina.com 注册时的邮箱
+Hostname ssh.github.com
+PreferredAuthentications publickey
+IdentityFile ~/.ssh/id_rsa
+Port 443
+```
+
+测试连接是否成功：
+```
+$ ssh -T git@github.com
+Enter passphrase for key '/c/Users/Administrator/.ssh/id_rsa':
+Hi baozc! You've successfully authenticated, but GitHub does not provide shell access.
+```
+
 ## 公开代码
 -  clone 已有仓库，尝试在已有仓库中添加代码并加以公开。首先将已有仓库 clone 到身边的开发环境中。、
 	- 仓库的路径，在代码仓库界面选择 Clone or download > Use SSH > 复制对应路径
