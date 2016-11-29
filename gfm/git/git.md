@@ -183,6 +183,7 @@ index 87dd5e5..22b5c0d 100644
 
 ### git分支命令
 - `git branch`查看分支。可以看到 master 分支左侧标有“\*”（星号），表示这是我们当前所在的分支
+	- 加 -a 参数可以同时显示本地仓库和远程仓库的分支信息。
 - `git checkout -b`——创建并切换分支
 - `git checkout -` 切换回上一个分支，像上面这样用“-”（连字符）代替分支名，就可以切换至上一个分支。
 - **特性分支** 顾名思义，是集中实现单一特性（主题），除此之外不进行任何作业的分支。在日常开发中，往往会创建数个特性分支，同时在此之外再保留一个随时可以发布软件的稳定分支。稳定分支的角色通常由 master 分支担当。即便在开发过程中发现了 BUG，也需要再创建新的分支，在新分支中进行修正。
@@ -190,3 +191,48 @@ index 87dd5e5..22b5c0d 100644
 -  `git merge`——合并分支，为了在历史记录中明确记录下本次分支合并，我们需要创建合并提交。因此，在合并时加上 `--no-ff` 参数。
 	- 例：`git merge --no-ff feature-A`，随后编辑器会启动，用于录入合并提交的信息。默认信息中已经包含了是从 feature-A 分支合并过来的相关内容，所以可不必做任何更改。将编辑器中显示的内容保存，关闭编辑器  
 - `git log  -- graph` 以图表形式查看分支
+
+### 更改提交的操作
+- `git reset` ——回溯历史版本
+	- `git rest --hard hashId` 要让仓库的 HEAD、暂存区、当前工作树回溯到指定状态，需要用到 `git rest --hard hashId`命令
+	- `git reflog` 查看当前仓库的操作日志 _`git log`命令只能查看以当前状态为终点的历史日志_
+- **查看冲突部分并将其解决**，如下冲突：
+```
+#Git教程
+<<<<<<< HEAD
+-feature-A
+=======
+-fix-B
+>>>>>>> fix-B
+```
+	- ======= 以上的部分是当前 HEAD 的内容，以下的部分是要合并的 fix-B 分支中的内容
+	- 修改后：
+		```
+		# Git教程
+		- feature-A
+		- fix-B
+		```
+- `git commit --amend`——修改提交信息，要修改上一条提交信息，可以使用该命令。
+```
+$ git commit --amend
+```
+	- 执行上面命令后，编辑器就会启动
+		```
+		old commit message
+
+		#Please enter the commit message for your changes. Lines starting
+		#with '#' will be ignored, and an empty message aborts the commit.
+		#Date:      Tue Nov 29 14:14:25 2016 +0800
+		#On branch bao
+		#Your branch is up-to-date with 'mp/bao'.
+		#Changes to be committed:
+		#       modified:   test
+		#Changes not staged for commit:
+		#       modified:   git.md
+		```
+	- 编辑器中显示的内容如上所示，其中包含之前的提交信息。
+	- 修改提交信息后保存
+- `git rebase -i`——压缩历史。在合并特性分支之前，如果发现已提交的内容中有些许拼写错误等，不妨提交一个修改，然后将这个修改包含到前一个提交之中，压缩成一个历史记录。
+	- 多次提交记录合并成一次
+
+### 推送至远程仓库
