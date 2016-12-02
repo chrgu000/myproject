@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <meta name="full-screen" content="yes">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <meta content="telephone=no" name="format-detection">
+    <title>融云 Demo - Web SDK</title>
+    <meta name="keywords"
+          content="融云,即时通讯,即时通讯云,即时通信云,移动 IM,开源 IM,IM 云服务,即时聊天软件,VOIP,移动客服,在线客服,免费,App 开发者服务，融云 Demo ，Web Demo，即时通讯 Demo"/>
+    <meta name="description" content="融云 Web Demo 下载体验！"/>
+    
+    
+    <script type="text/javascript" src="https://jspm.io/system@0.16.js"></script>
+<!--     <script type="text/javascript" src='../angularJs/angular2.min (1).js'></script> -->
+    <script type="text/javascript" src='../angularJs/angular.js'></script>
+<!-- <script src="https://code.angularjs.org/1.6.0-rc.2/angular.min.js"></script> -->
+<!--     <script type="text/javascript" src='../angularJs/angular2.min.js'></script> -->
+
+
+	<script src="http://cdn.ronghub.com/RongIMLib-2.2.4.min.js"></script> 
+	<script src='../static/js/jquery-1.8.2.min.js'></script>
+	<script type="text/javascript" src="dist/RongIMWidget.js"></script>
+	<link rel="stylesheet" type="text/css" href="dist/css/RongIMWidget.css"/>
+
+    <script type="text/javascript">
+    var demo = angular.module("demo", ["RongWebIMWidget"]);
+
+    /*
+     *@param config {Object} 初始化配置参数
+     */  
+//     WebIMWidget.init(config);
+	
+	demo.controller("main", ["$scope", "WebIMWidget", function($scope,WebIMWidget) {
+	    WebIMWidget.init({
+	      appkey:"x4vkb1qpvrkvk",
+	      token:"4mTwV9K9RQa+RKOvXeSyOmzb6uWgJReS29bZ0UO/4EAUOf++XkcEEECLzvFUidnkHVo341BurGZYbwwUq988Mrw4NU5ropvF"
+	    });
+	}]);
+	
+// 	WebIMWidget.init({
+// 		  appkey:"x4vkb1qpvrkvk",
+// 		  token:"4mTwV9K9RQa+RKOvXeSyOmzb6uWgJReS29bZ0UO/4EAUOf++XkcEEECLzvFUidnkHVo341BurGZYbwwUq988Mrw4NU5ropvF",
+// 		  onSuccess:function(){
+// 		    //初始化完成
+// 		  },
+// 		  onError:function(){
+// 		    //初始化错误
+// 		  }
+// 		});
+    </script>
+</head>
+<body>
+<rong-widget></rong-widget>
+<div ng-app="">
+ 	<p>名字 : <input type="text" ng-model="name"></p>
+ 	<h1>Hello {{name}}</h1>
+</div>
+</body>
+<script type="text/javascript">
+	
+</script>
+</html>
