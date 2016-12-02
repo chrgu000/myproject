@@ -18,6 +18,10 @@
     <script src="http://cdn.ronghub.com/RongIMLib-2.2.4.min.js"></script> 
     
     <script src='../static/js/jquery-1.8.2.min.js'></script>
+    
+    <script src="https://code.angularjs.org/1.6.0-rc.2/angular.min.js"></script>
+<!--     <script src="https://jspm.io/system@0.16.js"></script> -->
+<!--     <script type="text/javascript" src='../angularJs/angular2.min.js'></script> -->
 
 	<script type="text/javascript" src="dist/RongIMWidget.js"></script>
 	<link rel="stylesheet" type="text/css" href="dist/css/RongIMWidget.css"/>
@@ -48,6 +52,26 @@
 						console.log("token is "+token);
 						
 						initMes(token);
+						
+						var demo = angular.module("demo", ["RongWebIMWidget"]);
+						WebIMWidget.init(config);
+						demo.controller("main", ["$scope", "WebIMWidget", function($scope,WebIMWidget) {
+						    WebIMWidget.init({
+						      appkey:"x4vkb1qpvrkvk",
+						      token:token
+						    });
+						}]);
+						
+						WebIMWidget.init({
+							  appkey:"x4vkb1qpvrkvk",
+							  token:token,
+							  onSuccess:function(){
+							    //初始化完成
+							  },
+							  onError:function(){
+							    //初始化错误
+							  }
+							});
 					}               	
                 },
                 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -226,9 +250,9 @@
     </script>
 </head>
 <body>
-<!-- 	<rong-widget></rong-widget> -->
+	<rong-widget></rong-widget>
 </body>
-
-	<audio style="width: 0px;height: 0px;display: none;" src="static/images/sms-received.mp3" controls="controls">
-</audio>
+<script type="text/javascript">
+	
+</script>
 </html>

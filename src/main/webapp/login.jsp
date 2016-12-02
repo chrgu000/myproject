@@ -6,10 +6,10 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>longin jsp</title>
 <script type="text/javascript">
-	docment.getele
+// 	docment.getele
 </script>
 </head>
 <body>
-<h1>登录页面</h1>
+<h1>登录页面11</h1>
 </body>
 </html>

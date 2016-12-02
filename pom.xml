@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>maven.test</groupId>
-	<artifactId>spring</artifactId>
+	<groupId>maven.bao</groupId>
+	<artifactId>project</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>spring Maven Webapp</name>
+	<name>myproject Maven Webapp</name>
 	<url>http://maven.apache.org</url>
 	
   <properties>
@@ -138,7 +138,7 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>spring</finalName>
+		<finalName>project</finalName>
 		
 		<plugins>
 			<plugin>  
@@ -154,6 +154,20 @@
 					<webappDirectory>${basedir}/src/main/webapp</webappDirectory> 
 					<warSourceDirectory>${basedir}/src/main/webapp</warSourceDirectory>
 			    </configuration>  
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<testFailureIgnore>true</testFailureIgnore>
+				</configuration>
 			</plugin>
 			<plugin>
 		        <artifactId>maven-compiler-plugin</artifactId>

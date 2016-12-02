@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>longin jsp</title>
+<title>index12 jsp</title>
 <link rel="stylesheet" href="http://localhost/spring/statics/jquery-ui/themes/base/jquery.ui.all.css" type="text/css">
 <link rel="stylesheet" href="http://www.jszg.cn/statics/styles/redmond/jquery-ui-1.8.11.custom.css" type="text/css">
 <link rel="stylesheet" href="statics/demos.css" type="text/css">
