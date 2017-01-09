@@ -151,22 +151,22 @@ To github.com:baozc/test.git
 	- `git diff HEAD`：是查看working tree和commit的差别的。（你一定没有忘记，HEAD代表的是最近的一次commit的信息）
 	- **查看简单的diff结果，可以加上--stat参数：**`git diff --stat `
 - `git diff`输出格式：
-```
-$ git diff --cached
-diff --git a/gfm/git/git.md b/gfm/git/git.md
-index 87dd5e5..22b5c0d 100644
---- a/gfm/git/git.md
-+++ b/gfm/git/git.md
-@@ -83,6 +83,7 @@ To github.com:baozc/test.git
- ## git操作命令
- - `git init` 初始化仓库，如果初始化成功，执行了 `git init`命令的目录下就会生成 .git 目录。这
- - `git status` 查看仓库的状态，工作树和仓库在被操作的过程中，状态会不断发生变化。在 Git 操作
-+       - 当文件太多时，进入某个文件夹，使用`git status .` 可以只查看这个文件夹中的git状态。
- - `git add` 向暂存区中添加文件，如果只是用 Git 仓库的工作树创建了文件，那么该文件并不会被记
-（Stage 或者 Index）中。暂存区是提交之前的一个临时区域。
-        - `git add xx`命令可以将xx文件或目录添加到暂存区
-        - `git add -A .`来一次添加所有改变的文件。注意 -A 选项后面还有一个句点. `git add -A`
-```
+	```
+	$ git diff --cached
+	diff --git a/gfm/git/git.md b/gfm/git/git.md
+	index 87dd5e5..22b5c0d 100644
+	--- a/gfm/git/git.md
+	+++ b/gfm/git/git.md
+	@@ -83,6 +83,7 @@ To github.com:baozc/test.git
+	 ## git操作命令
+	 - `git init` 初始化仓库，如果初始化成功，执行了 `git init`命令的目录下就会生成 .git 目录。这
+	 - `git status` 查看仓库的状态，工作树和仓库在被操作的过程中，状态会不断发生变化。在 Git 操作
+	+       - 当文件太多时，进入某个文件夹，使用`git status .` 可以只查看这个文件夹中的git状态。
+	 - `git add` 向暂存区中添加文件，如果只是用 Git 仓库的工作树创建了文件，那么该文件并不会被记
+	（Stage 或者 Index）中。暂存区是提交之前的一个临时区域。
+	        - `git add xx`命令可以将xx文件或目录添加到暂存区
+	        - `git add -A .`来一次添加所有改变的文件。注意 -A 选项后面还有一个句点. `git add -A`
+	```
 	- 第一行表示结果为git格式的diff。进行比较的是a版本的git.md（**变动前**），b版本的git.md(**变动后**)
 	- 第二行表示两个版本的git哈希值（index区域的87dd5e5对象，与工作目录区域的22b5c0d对象进行比较），最后的六位数字是对象的模式（普通文件，644权限）。
 	- 第三行表示进行比较的两个文件。 "---"表示变动前的版本，"+++"表示变动后的版本。  
