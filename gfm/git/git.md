@@ -218,10 +218,13 @@ To github.com:baozc/test.git
 		- fix-B
 		```
 - `git commit --amend`——修改提交信息，要修改上一条提交信息，可以使用该命令。
-```
-$ git commit --amend
-```
+
+	```
+	$ git commit --amend
+	```
+	
 	- 执行上面命令后，编辑器就会启动
+	
 		```
 		old commit message
 
