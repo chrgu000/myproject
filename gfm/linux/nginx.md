@@ -22,6 +22,7 @@ set $a hello;
 - 在server中`location /meopen`表示匹配/meopn路径时代理
     - 在location中，proxy_pass可以另外指定路径，如：proxy_pass : htpp://www.baidu.com
 - upstream可以配置服务器地址
+
     ```
     //upstream中的server元素必须要注意，不能加http://，但proxy_pass中必须加。
     upstream meopenServer{  
@@ -32,6 +33,7 @@ set $a hello;
     }
     ```
     - 在location中这么引用upstream
+    
         ```
         location /meopen{
             proxy_pass http://meopenServer;
