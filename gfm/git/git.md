@@ -151,6 +151,7 @@ To github.com:baozc/test.git
 	- `git diff HEAD`：是查看working tree和commit的差别的。（你一定没有忘记，HEAD代表的是最近的一次commit的信息）
 	- **查看简单的diff结果，可以加上--stat参数：**`git diff --stat `
 - `git diff`输出格式：
+
 	```
 	$ git diff --cached
 	diff --git a/gfm/git/git.md b/gfm/git/git.md
